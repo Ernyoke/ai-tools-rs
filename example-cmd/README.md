@@ -34,3 +34,20 @@ $ example-cmd "list all processes" -n 3
 2. top
 3. htop
 ```
+
+## API KEY
+
+Since this tool relies on OpenAI API, it requires an API key. The API key can be placed in a config file on the following 
+path:
+
+```
+~/.config/openai/config.json
+```
+
+The structure of the `config.json` file should be the following:
+
+```json
+{
+    "api-key": "sk-..."
+}
+```
