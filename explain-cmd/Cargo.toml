@@ -1,0 +1,18 @@
+[package]
+name = "explain-cmd"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ervin Szilagyi"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.68"
+async-openai = "0.5.0"
+clap = { version = "4.1.1", features = ["derive"] }
+futures = "0.3.25"
+home = "0.5.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0.91"
+strfmt = "0.2.2"
+tokio = { version = "1.24.1", features = ["full"] }
