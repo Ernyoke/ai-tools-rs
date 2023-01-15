@@ -8,6 +8,8 @@ use std::io;
 use std::path::Path;
 use strfmt::strfmt;
 use tokio::fs::read_to_string;
+use futures::StreamExt;
+
 
 #[derive(Parser, Default, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -40,7 +42,7 @@ async fn main() -> Result<(), anyhow::Error> {
     let client = Client::new().with_api_key(config.api_key);
     let prompt = r#"
     You are given the following Unix/Linux command: {cmd}.
-    Please explain clearly what will this command accomplish.
+    Explain in human readable format what will this command accomplish.
     If the command is invalid, state it clearly, otherwise avoid saying that "This command is valid" and
     provide just the explanation.
     "#;
@@ -54,12 +56,20 @@ async fn main() -> Result<(), anyhow::Error> {
         .prompt(strfmt(&prompt, &vars)?)
         .temperature(0.5)
         .max_tokens(512_u16)
+        .stream(true)
         .build()?;
 
-    let response = client.completions().create(request).await?;
-    let choice = response.choices.iter().nth(0).unwrap();
+    let mut stream = client.completions().create_stream(request).await?;
 
-    println!("{}", choice.text.trim());
+    while let Some(response) = stream.next().await {
+        match response {
+            Ok(ccr) => ccr.choices.iter().for_each(|c| {
+                print!("{}", c.text);
+            }),
+            Err(e) => eprintln!("{}", e),
+        }
+    }
+
     Ok(())
 }
 
